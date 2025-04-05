@@ -1,5 +1,6 @@
 package me.thetechnicboy.redstonefeatures.block;
 
+import com.google.gson.JsonObject;
 import me.thetechnicboy.redstonefeatures.container.RedstoneRequesterMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,6 +16,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -27,15 +30,25 @@ public class RedstoneRequesterEntity extends BlockEntity implements MenuProvider
         super(ModBlocks.REDSTONE_REQUESTER_BLOCKENTITY.get(), pos, state);
     }
 
-
+    int tickCounter = 0;
     public void tick(Level level, BlockPos pos, BlockState state){
-        if(!level.isClientSide()) {
-
-            int redstoneStrength = level.getBestNeighborSignal(pos);
-            if(lastRedstoneStrength != redstoneStrength) {
-                System.out.println("Redstone power: " + redstoneStrength);
-                System.out.println("URL: " + getText());
-                lastRedstoneStrength = redstoneStrength;
+        tickCounter++;
+        if(tickCounter == 2) {
+            tickCounter = 0;
+            if (!level.isClientSide()) {
+                int redstoneStrength = level.getBestNeighborSignal(pos);
+                if (lastRedstoneStrength != redstoneStrength) {
+                    JsonObject obj = new JsonObject();
+                    obj.addProperty("type", "redstone_requester");
+                    JsonObject data = new JsonObject();
+                    data.addProperty("redstoneStrength", redstoneStrength);
+                    data.addProperty("posX", pos.get(Direction.Axis.X));
+                    data.addProperty("posY", pos.get(Direction.Axis.Y));
+                    data.addProperty("posZ", pos.get(Direction.Axis.Z));
+                    obj.add("data", data);
+                    postRequest(obj.toString());
+                    lastRedstoneStrength = redstoneStrength;
+                }
             }
         }
     }
@@ -76,5 +89,27 @@ public class RedstoneRequesterEntity extends BlockEntity implements MenuProvider
         setText(tag.getString("Text"));
     }
 
+    private void postRequest(String data){
+        try{
+            if(url == null) return;
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type", "application/json");
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = data.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            try (InputStream is = connection.getInputStream()) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                String line;
+                StringBuilder response = new StringBuilder();
+                while ((line = br.readLine()) != null) {
+                    response.append(line);
+                }
+            }
+        } catch (IOException e) {}
+    }
 
 }
