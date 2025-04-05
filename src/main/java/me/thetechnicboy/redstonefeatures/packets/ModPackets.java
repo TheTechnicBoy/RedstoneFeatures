@@ -5,8 +5,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
-import static me.thetechnicboy.redstonefeatures.Redstonefeatures.MODID;
-
 public class ModPackets {
 
     private static SimpleChannel INSTANCE;
