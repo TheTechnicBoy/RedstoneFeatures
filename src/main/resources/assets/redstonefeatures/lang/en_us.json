@@ -1,0 +1,5 @@
+{
+    "block.redstonefeatures.redstone_requester": "Redstone Requester",
+    "gui.redstonefeatures.redstone_requester.title": "Redstone Requester",
+    "gui.redstonefeatures.redstone_requester.enterURL": "Enter URL: "
+}

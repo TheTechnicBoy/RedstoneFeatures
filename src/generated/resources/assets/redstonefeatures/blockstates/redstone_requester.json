@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "redstone_level=0": {
+      "model": "redstonefeatures:block/redstone_requester_0"
+    },
+    "redstone_level=1": {
+      "model": "redstonefeatures:block/redstone_requester_1"
+    },
+    "redstone_level=10": {
+      "model": "redstonefeatures:block/redstone_requester_10"
+    },
+    "redstone_level=11": {
+      "model": "redstonefeatures:block/redstone_requester_11"
+    },
+    "redstone_level=12": {
+      "model": "redstonefeatures:block/redstone_requester_12"
+    },
+    "redstone_level=13": {
+      "model": "redstonefeatures:block/redstone_requester_13"
+    },
+    "redstone_level=14": {
+      "model": "redstonefeatures:block/redstone_requester_14"
+    },
+    "redstone_level=15": {
+      "model": "redstonefeatures:block/redstone_requester_15"
+    },
+    "redstone_level=2": {
+      "model": "redstonefeatures:block/redstone_requester_2"
+    },
+    "redstone_level=3": {
+      "model": "redstonefeatures:block/redstone_requester_3"
+    },
+    "redstone_level=4": {
+      "model": "redstonefeatures:block/redstone_requester_4"
+    },
+    "redstone_level=5": {
+      "model": "redstonefeatures:block/redstone_requester_5"
+    },
+    "redstone_level=6": {
+      "model": "redstonefeatures:block/redstone_requester_6"
+    },
+    "redstone_level=7": {
+      "model": "redstonefeatures:block/redstone_requester_7"
+    },
+    "redstone_level=8": {
+      "model": "redstonefeatures:block/redstone_requester_8"
+    },
+    "redstone_level=9": {
+      "model": "redstonefeatures:block/redstone_requester_9"
+    }
+  }
+}

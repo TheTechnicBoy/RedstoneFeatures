@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "me.thetechnicboy.redstonefeatures.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "redstonefeatures.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
