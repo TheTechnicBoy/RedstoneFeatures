@@ -7,6 +7,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.function.Supplier;
 
 public class TextUpdatePacket {
@@ -34,7 +36,7 @@ public class TextUpdatePacket {
             if (player != null) {
                 BlockEntity entity = player.level().getBlockEntity(packet.pos);
                 if (entity instanceof RedstoneRequesterEntity redstoneEntity) {
-                    redstoneEntity.setText(packet.text);
+                    redstoneEntity.setURL(packet.text);
                 }
             }
         });

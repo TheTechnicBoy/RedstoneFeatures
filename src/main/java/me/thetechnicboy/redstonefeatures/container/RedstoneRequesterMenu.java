@@ -8,20 +8,21 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
+
 public class RedstoneRequesterMenu extends AbstractContainerMenu {
 
-    private final String text;
-    private final BlockPos pos;
+    public final String mURL;
+    public final BlockPos mPos;
 
 
     public RedstoneRequesterMenu(int id, Inventory inv, FriendlyByteBuf buf) {
         this(id, inv, buf.readBlockPos(), buf.readUtf());
     }
 
-    public RedstoneRequesterMenu(int id, Inventory inv, BlockPos pos, String text) {
+    public RedstoneRequesterMenu(int id, Inventory inv, BlockPos pos, String url) {
         super(ModMenus.REDSTONE_REQUESTER_MENU.get(), id);
-        this.pos = pos;
-        this.text = text;
+        mPos = pos;
+        mURL = url;
 
         addPlayerInventory(inv);
     }
@@ -57,13 +58,5 @@ public class RedstoneRequesterMenu extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player p_38874_) {
         return true;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public BlockPos getBlockPos() {
-        return pos;
     }
 }

@@ -1,6 +1,8 @@
 package me.thetechnicboy.redstonefeatures.block;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import me.thetechnicboy.redstonefeatures.Redstonefeatures;
 import me.thetechnicboy.redstonefeatures.container.RedstoneRequesterMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -21,8 +23,9 @@ import java.net.URL;
 
 public class RedstoneRequesterEntity extends BlockEntity implements MenuProvider  {
 
-    private URL url = null;
-    private int lastRedstoneStrength = -1;
+    private URL mURL = null;
+    public int mLastInput = -1;
+    public int mLastOutput = -1;
 
     public RedstoneRequesterEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.REDSTONE_REQUESTER_BLOCKENTITY.get(), pos, state);
@@ -35,17 +38,31 @@ public class RedstoneRequesterEntity extends BlockEntity implements MenuProvider
             tickCounter = 0;
             if (!level.isClientSide()) {
                 int redstoneStrength = level.getBestNeighborSignal(pos);
-                if (lastRedstoneStrength != redstoneStrength) {
-                    JsonObject obj = new JsonObject();
-                    obj.addProperty("type", "redstone_requester");
+                if (mLastInput != redstoneStrength) {
+                    mLastInput = redstoneStrength;
+
+                    JsonObject inOBJ = new JsonObject();
                     JsonObject data = new JsonObject();
+
+                    inOBJ.addProperty("type", "redstone_requester");
                     data.addProperty("redstoneStrength", redstoneStrength);
                     data.addProperty("posX", pos.get(Direction.Axis.X));
                     data.addProperty("posY", pos.get(Direction.Axis.Y));
                     data.addProperty("posZ", pos.get(Direction.Axis.Z));
-                    obj.add("data", data);
-                    postRequest(obj.toString());
-                    lastRedstoneStrength = redstoneStrength;
+                    inOBJ.add("data", data);
+
+                    String response = postRequest(inOBJ.toString());
+                    Redstonefeatures.LOGGER.info(response);
+                    JsonObject outOBJ = (JsonObject) JsonParser.parseString(response);
+                    if(outOBJ.has("redstoneStrength")) {
+                        mLastOutput = outOBJ.get("redstoneStrength").getAsInt();
+
+                        // Signal, dass sich der Block-Zustand geändert hat
+                        level.sendBlockUpdated(pos, getBlockState(), getBlockState(), 3);
+
+                        // Redstone-Komparator benachrichtigen
+                        level.updateNeighborsAt(pos, getBlockState().getBlock());
+                    }
                 }
             }
         }
@@ -58,56 +75,58 @@ public class RedstoneRequesterEntity extends BlockEntity implements MenuProvider
 
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
-        return new RedstoneRequesterMenu(id, inv, this.worldPosition, getText() );
+        return new RedstoneRequesterMenu(id, inv, this.worldPosition, getURL().toString() );
     }
 
-    public void setText(String text) {
-        try{
-            url = new URL(text);
-        } catch (MalformedURLException e) {
-            url = null;
-        }
+    public void setURL(String url) {
+        try {
+            this.mURL = new URL(url);
+        } catch (MalformedURLException e) {}
         setChanged();
     }
 
-    public String getText() {
-        if(url == null) return "";
-        return url.toString();
+    public String getURL() {
+        if(mURL == null) return "";
+        return mURL.toString();
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag){
         super.saveAdditional(tag);
-        tag.putString("Text", getText());
+        tag.putString("URL", getURL());
     }
 
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        setText(tag.getString("Text"));
+        setURL(tag.getString("URL"));
     }
 
-    private void postRequest(String data){
-        try{
-            if(url == null) return;
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Type", "application/json");
-            try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = data.getBytes("utf-8");
-                os.write(input, 0, input.length);
-            }
-
-            try (InputStream is = connection.getInputStream()) {
-                BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                String line;
-                StringBuilder response = new StringBuilder();
-                while ((line = br.readLine()) != null) {
-                    response.append(line);
+    private String postRequest(String data){
+        if(mURL != null) {
+            try {
+                HttpURLConnection connection = (HttpURLConnection) mURL.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "application/json");
+                try (OutputStream os = connection.getOutputStream()) {
+                    byte[] input = data.getBytes("utf-8");
+                    os.write(input, 0, input.length);
                 }
-            }
-        } catch (IOException e) {}
+
+                try (InputStream is = connection.getInputStream()) {
+                    BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                    String line;
+                    StringBuilder response = new StringBuilder();
+                    while ((line = br.readLine()) != null) {
+                        response.append(line);
+                    }
+                    return response.toString();
+                }
+            } catch (IOException e) {}
+        }
+        return "{}";
     }
+
 
 }

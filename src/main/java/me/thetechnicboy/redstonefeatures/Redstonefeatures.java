@@ -26,9 +26,7 @@ public class Redstonefeatures {
     public static ResourceLocation genRL(String key) { return ResourceLocation.tryBuild(MODID, key); }
 
     public static final String MODID = "redstonefeatures";
-    private static final Logger LOGGER = LogUtils.getLogger();
-
-
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public Redstonefeatures() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -36,7 +34,6 @@ public class Redstonefeatures {
 
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(this::onClientSetup);
-        //modEventBus.addListener(this::addCreative);
 
         modEventBus.addListener((BuildCreativeModeTabContentsEvent event) -> {
             if (event.getTabKey() == CreativeModeTabs.REDSTONE_BLOCKS) event.accept(ModItems.REDSTONE_REQUESTER);

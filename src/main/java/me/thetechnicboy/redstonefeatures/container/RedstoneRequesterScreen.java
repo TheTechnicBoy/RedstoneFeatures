@@ -29,7 +29,7 @@ public class RedstoneRequesterScreen extends AbstractContainerScreen<RedstoneReq
         textField = new EditBox(this.font, this.leftPos + 10, this.topPos + 35, this.imageWidth - 20, 20, Component.literal("Enter Text"));
         this.addRenderableWidget(textField);
         textField.setMaxLength(100);
-        textField.setValue(menu.getText());
+        textField.setValue(menu.mURL);
     }
 
     @Override
@@ -56,11 +56,11 @@ public class RedstoneRequesterScreen extends AbstractContainerScreen<RedstoneReq
             String enteredText = textField.getValue();
             boolean success = false;
             try {
-                URL url = new URL(enteredText);
+                new URL(enteredText);
                 success = true;
             } catch (MalformedURLException e) {}
 
-            if(success) ModPackets.sendToServer(new TextUpdatePacket(menu.getBlockPos(), enteredText));
+            if(success) ModPackets.sendToServer(new TextUpdatePacket(menu.mPos, enteredText));
 
             if(success) this.minecraft.player.playSound(SoundEvents.NOTE_BLOCK_BELL.get(), 1.0F, 1.0F);
             if(!success) this.minecraft.player.playSound(SoundEvents.NOTE_BLOCK_BASS.get(), 1.0F, 0.5F);

@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
@@ -20,6 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.phys.BlockHitResult;
@@ -61,11 +63,11 @@ public class RedstoneRequester extends Block implements EntityBlock {
 
                     @Override
                     public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
-                        return new RedstoneRequesterMenu(id, inv, pos, redstoneBlockEntity.getText());
+                        return new RedstoneRequesterMenu(id, inv, pos, redstoneBlockEntity.getURL());
                     }
                 }, buf -> {
                     buf.writeBlockPos(pos);
-                    buf.writeUtf(redstoneBlockEntity.getText()); // Text mitgeben
+                    buf.writeUtf(redstoneBlockEntity.getURL());
                 });
             }
         }
@@ -95,5 +97,16 @@ public class RedstoneRequester extends Block implements EntityBlock {
                 level.setBlock(pos, state.setValue(REDSTONE_LEVEL, redstone), 2);
             }
         }
+    }
+
+    @Override
+    public boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+        RedstoneRequesterEntity be = (RedstoneRequesterEntity) level.getBlockEntity(pos);
+        return Math.max(be.mLastOutput, 0);
     }
 }
